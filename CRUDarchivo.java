@@ -1,32 +1,80 @@
-public class Cliente {
-    private int id_clinete;
-    private String nombre;
-    private String apellido;
-    private int telefono;
-    private Boolean activo;
-//cliente
-    public Cliente(int id_clinete, String nombre, String apellido, int telefono, boolean activo) {
-        this.id_clinete = id_clinete;
-        this.nombre = nombre;
-        this.apellido = apellido;
-        this.telefono = telefono;
-        this.activo = activo;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Scanner;
+
+public class CRUDArchivo {
+    public static void RegistrarCliente(Cliente client) throws IOException {
+    FileWriter fw = new FileWriter("usuarios.txt", true);
+    BufferedWriter bw = new BufferedWriter(fw);
+    bw.write(client.toString());
+    bw.newLine();
+    bw.close();
+    }
+//lista de clientes
+    
+    public static List<Cliente> ListarClientes(Cliente cliente) throws IOException {
+        List<Cliente> lista = new ArrayList<>();
+        Scanner sc = new Scanner(new File("usuarios.txt"));
+
+        while (sc.hasNextLine()) {
+            String[] datos = sc.nextLine().split(",");
+            lista.add(new Cliente(
+                Integer.parseInt(datos[0]),
+                datos[1],
+                datos[2],
+                Integer.parseInt(datos[3]),
+                Boolean.parseBoolean(datos[4])
+            ));
+        }
+        sc.close();
+        return lista;
     }
 
-    public int getId() {return id_clinete;}
-    public String getNombre() { return  nombre;}
-    public String getApellido() { return  apellido;}
-    public int getTelefono() { return  telefono;}
-    public Boolean getActivo() {return activo;}
+        public static void actualizarCliente(int id, String nuevoNombre, String nuevoApellido, int nuevoTelefono, boolean nuevoEstado) throws IOException {
 
-    public void setNombre(String nombre) {this.nombre = nombre;}
-    public void setApellido(String apellido) {this.apellido = apellido;}
-    public void setTelefono(int telefono) {this.telefono = telefono;}
-    public void setEstado(Boolean activo) {this.activo = activo;}
+        List<Cliente> lista = ListarClientes(null);
+        BufferedWriter bw = new BufferedWriter(new FileWriter("usuarios.txt"));
 
-    @Override
-    public String toString() {
-        return id_clinete + "," + nombre + "," + apellido + "," + telefono + "," + activo;
+        for (Cliente u : lista) {
+            if (u.getId() == id) { //revisar eso
+                u.setNombre(nuevoNombre);
+                u.setApellido(nuevoApellido);
+                u.setTelefono(nuevoTelefono);
+                u.setEstado(nuevoEstado);
+            }
+            bw.write(u.toString());
+            bw.newLine();
+        }
+        bw.close();
     }
+
+    
+    public static void eliminarCliente(int id) throws IOException {
+
+        List<Cliente> lista = ListarClientes(null);
+        BufferedWriter bw = 
+            new BufferedWriter(new FileWriter("usuarios.txt"));
+
+        for (Cliente u : lista) {
+            if (u.getId() != id) {
+                bw.write(u.toString());
+                bw.newLine();
+            }
+        }
+        bw.close();
+    }
+    public static void RegistrarPedido(Pedido pedido) throws IOException {
+    FileWriter fw = new FileWriter("pedidos.txt", true);
+    BufferedWriter bw = new BufferedWriter(fw);
+    bw.write(pedido.toString());
+    bw.newLine();
+    bw.close();
+    }
+    
+      
+   
 }
-
